@@ -1,17 +1,13 @@
 ---
-- name: Include OS-specific variables.
-  include_vars: "{{ ansible_os_family }}.yml"
 
 - name: Check if teleport is installed.
   command: "/usr/local/bin/teleport version"
   changed_when: false
   register: teleport_version_check
   failed_when: false
-
-- name: Install make.
-  package:
-    name: make
-    state: present
+  #stat:
+  #  path: /usr/local/bin/teleport
+  #register: teleport_bin
 
 - name: Unarchive teleport.
   unarchive:
@@ -34,6 +30,7 @@
     owner: "root"
     group: "root"
     mode: 0600
+  notify: restart teleport
 
 - include_tasks: configure-Systemd.yml
   when: ansible_service_mgr == 'systemd'
