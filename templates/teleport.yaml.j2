@@ -20,6 +20,9 @@ teleport:
   storage:
     type: {{ teleport_storage_type }}
   data_dir: {{ teleport_data_dir }}
+{% if teleport_public_addr %}
+public_addr: "{{ teleport_public_addr }}"
+{% endif %}
 auth_service:
 {% if teleport_auth_enabled | default(false) %}
   enabled: "yes"
@@ -76,3 +79,4 @@ proxy_service:
 {% else %}
   enabled: "no"
 {% endif %}
+
