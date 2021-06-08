@@ -71,6 +71,10 @@ ssh_service:
 {% if teleport_ssh_enabled | default(false) %}
   enabled: "yes"
   listen_addr: "{{ teleport_ssh_listen_address }}"
+{% if teleport_ssh_labels %}
+  labels:
+    {{ teleport_ssh_labels }}
+{% endif %}
 {% else %}
   enabled: "no"
 {% endif %}

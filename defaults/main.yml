@@ -32,6 +32,7 @@ teleport_auth_oidc_connectors: []
 teleport_ssh_enabled: true
 teleport_ssh_listen_address: '{{ teleport_default_address | ipwrap }}:3022'
 teleport_commands: []
+teleport_ssh_labels: ''
 
 # proxy service
 teleport_proxy_enabled: true
