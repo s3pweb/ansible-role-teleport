@@ -44,6 +44,7 @@
 - name: Ensure teleport has selected state and enabled on boot.
   service:
     name: 'teleport'
-    state: 'reloaded'
+    #state: 'reloaded'
+    state: 'restarted'
     enabled: yes
   changed_when: false

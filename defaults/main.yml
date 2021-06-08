@@ -1,5 +1,5 @@
 ---
-teleport_version: "4.0.2"
+teleport_version: "6.2.3"
 teleport_url: "https://get.gravitational.com/teleport-v{{ teleport_version }}-linux-amd64-bin.tar.gz"
 teleport_ssl_cert_path: "/etc/teleport"
 teleport_config_path: "/etc/teleport.yaml"
@@ -10,10 +10,13 @@ teleport_auth_servers:
 teleport_data_dir: '/var/lib/teleport'
 
 teleport_log_level: 'WARN'
-teleport_storage_type: 'bolt'
+teleport_storage_type: 'dir'
 teleport_pidfile: '/var/run/teleport.pid'
 
 teleport_default_address: '0.0.0.0'
+
+teleport_audit_events_uri: ''
+teleport_audit_sessions_uri: ''
 
 # auth service
 teleport_auth_enabled: true
@@ -35,5 +38,8 @@ teleport_proxy_enabled: true
 teleport_proxy_listen_address: '{{ teleport_default_address | ipwrap }}:3023'
 teleport_proxy_web_listen_address: '{{ teleport_default_address | ipwrap }}:3080'
 teleport_proxy_tunnel_listen_address: '{{ teleport_default_address | ipwrap }}:3024'
+teleport_public_addr: ''
+teleport_ssh_public_addr: ''
+teleport_tunnel_public_addr: ''
 teleport_proxy_https_key_file: ''
 teleport_proxy_https_cert_file: ''
