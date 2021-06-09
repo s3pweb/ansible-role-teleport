@@ -36,6 +36,7 @@ teleport_ssh_labels: ''
 
 # proxy service
 teleport_proxy_enabled: true
+teleport_ca_pin: ''
 teleport_proxy_listen_address: '{{ teleport_default_address | ipwrap }}:3023'
 teleport_proxy_web_listen_address: '{{ teleport_default_address | ipwrap }}:3080'
 teleport_proxy_tunnel_listen_address: '{{ teleport_default_address | ipwrap }}:3024'

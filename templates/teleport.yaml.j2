@@ -1,6 +1,9 @@
 teleport:
   nodename: {{ teleport_nodename }}
   pid_file: {{ teleport_pidfile }}
+{% if teleport_ca_pin %}
+  ca_pin: "{{ teleport_ca_pin }}"
+{% endif %}
 {% if teleport_auth_token %}  
   auth_token: "{{ teleport_auth_token }}"
 {% endif %}
