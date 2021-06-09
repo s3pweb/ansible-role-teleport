@@ -27,6 +27,7 @@ teleport_auth_tokens_proxy: []
 teleport_auth_tokens_auth: []
 teleport_auth_trusted_clusters: []
 teleport_auth_oidc_connectors: []
+teleport_auth_public_addr: ''
 
 # ssh service
 teleport_ssh_enabled: true
@@ -45,3 +46,4 @@ teleport_ssh_public_addr: ''
 teleport_tunnel_public_addr: ''
 teleport_proxy_https_key_file: ''
 teleport_proxy_https_cert_file: ''
+teleport_acme_email: ''
