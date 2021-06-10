@@ -26,7 +26,7 @@ teleport:
     region: "{{ teleport_storage_region }}"
 {% endif %}
 {% if teleport_audit_events_uri | default(false) %}
-    audit_events_uri: "{{ teleport_audit_events_uri }}"
+    audit_events_uri: {{ teleport_audit_events_uri }}
 {% endif %}
 {% if teleport_storage_table_name | default(false) %}
     table_name: "{{ teleport_storage_table_name }}"
