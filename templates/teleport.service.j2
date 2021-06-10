@@ -9,6 +9,7 @@ ExecStart=/usr/local/bin/teleport start --config={{ teleport_config_path }} {{ t
 ExecReload=/bin/kill -HUP $MAINPID
 PIDFile=/var/run/teleport.pid
 KillMode=process
+User=root
 
 [Install]
 WantedBy=multi-user.target

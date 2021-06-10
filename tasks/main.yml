@@ -41,6 +41,14 @@
 - include_tasks: configure-Sysvinit.yml
   when: ansible_service_mgr == 'sysvinit'
 
+- name: Create aws credentials file
+  template:
+    src: "aws_credentials.j2"
+    dest: "/root/.aws/credentials"
+    owner: "root"
+    group: "root"
+    mode: 0600
+
 - name: Ensure teleport has selected state and enabled on boot.
   service:
     name: 'teleport'
