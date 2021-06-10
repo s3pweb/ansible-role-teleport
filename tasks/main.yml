@@ -48,6 +48,7 @@
     owner: "root"
     group: "root"
     mode: 0600
+  when: teleport_aws_access_key_id is defined and teleport_aws_secret_access_key is defined
 
 - name: Ensure teleport has selected state and enabled on boot.
   service:
