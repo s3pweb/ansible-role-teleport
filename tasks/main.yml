@@ -56,6 +56,36 @@
     mode: 0600
   when: teleport_aws_access_key_id is defined and teleport_aws_secret_access_key is defined
 
+- name: Ensure /var/lib/teleport directory exists
+  file:
+    path: /var/lib/teleport
+    state: directory
+  when: teleport_force_host_uuid is defined
+
+- name: Force host_uuid
+  copy:
+    content: "{{ teleport_force_host_uuid }}"
+    dest: /var/lib/teleport/host_uuid
+  when: teleport_force_host_uuid is defined
+
+- name: Check input tcp port 3025
+  command: iptables -C INPUT -p tcp --dport 3025 -j ACCEPT
+  register: iptables_rule_check_result
+  failed_when: False
+  changed_when: False
+  tags: iptables
+
+- name: Allows input tcp port 3025
+  command: iptables -I INPUT 1 -p tcp --dport 3025 -j ACCEPT
+  register: iptables_rule_insert_result
+  when: iptables_rule_check_result is failed
+  tags: iptables
+
+- name: save iptables v4 rules
+  shell: iptables-save > /etc/iptables/rules.v4
+  when: iptables_rule_check_result is failed and iptables_rule_insert_result is success
+  tags: iptables
+
 - name: Ensure teleport has selected state and enabled on boot.
   service:
     name: 'teleport'
