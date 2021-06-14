@@ -41,6 +41,12 @@
 - include_tasks: configure-Sysvinit.yml
   when: ansible_service_mgr == 'sysvinit'
 
+- name: Ensure .aws directory exists
+  file:
+    path: "/root/.aws"
+    state: directory
+  when: teleport_aws_access_key_id is defined and teleport_aws_secret_access_key is defined
+
 - name: Create aws credentials file
   template:
     src: "aws_credentials.j2"
