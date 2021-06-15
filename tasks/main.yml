@@ -78,12 +78,12 @@
 - name: Allows input tcp port 3025
   command: iptables -I INPUT 1 -p tcp --dport 3025 -j ACCEPT
   register: iptables_rule_insert_result
-  when: iptables_rule_check_result is failed
+  when: iptables_rule_check_result.rc != 0
   tags: iptables
 
 - name: save iptables v4 rules
   shell: iptables-save > /etc/iptables/rules.v4
-  when: iptables_rule_check_result is failed and iptables_rule_insert_result is success
+  when: iptables_rule_check_result.rc != 0 and iptables_rule_insert_result.rc == 0
   tags: iptables
 
 - name: Ensure teleport has selected state and enabled on boot.
