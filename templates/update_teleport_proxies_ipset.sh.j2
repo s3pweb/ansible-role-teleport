@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+IPSET=/sbin/ipset
+DIG=/usr/bin/dig
+
+set -eu
+
+$IPSET list teleport_proxies_temp &>/dev/null || $IPSET create teleport_proxies_temp hash:ip
+
+$IPSET flush teleport_proxies_temp
+
+{% for auth_server in teleport_auth_servers %}
+$IPSET add teleport_proxies_temp $($DIG +short {{ auth_server }})
+{% endfor %}
+
+$IPSET swap teleport_proxies teleport_proxies_temp
+
+$IPSET destroy teleport_proxies_temp
+

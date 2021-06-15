@@ -110,6 +110,21 @@
   when: teleport_ssh_enabled and iptables_rule_check_result.rc != 0
   tags: iptables
 
+- name: Copy script to update teleport_proxies ipset
+  template:
+    src: "update_teleport_proxies_ipset.sh.j2"
+    dest: "/usr/sbin/update_teleport_proxies_ipset"
+    owner: "root"
+    group: "root"
+    mode: 0100
+  when: teleport_ssh_enabled
+
+- name: Ensure script to update teleport_proxies ipset is run very often
+  cron:
+    name: teleport_proxies ipset update
+    job: "/usr/sbin/update_teleport_proxies_ipset > /dev/null"
+  when: teleport_ssh_enabled
+
 - name: save iptables v4 rules
   shell: iptables-save > /etc/iptables/rules.v4
   when: iptables_rule_check_result.rc != 0 and iptables_rule_insert_result.rc == 0
