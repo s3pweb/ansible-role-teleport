@@ -73,12 +73,41 @@
   register: iptables_rule_check_result
   failed_when: False
   changed_when: False
+  when: teleport_auth_enabled
   tags: iptables
 
 - name: Allows input tcp port 3025
   command: iptables -I INPUT 1 -p tcp --dport 3025 -j ACCEPT
   register: iptables_rule_insert_result
-  when: iptables_rule_check_result.rc != 0
+  when: teleport_auth_enabled and iptables_rule_check_result.rc != 0
+  tags: iptables
+
+- name: Ensure ipset is installed
+  package:
+    name: ipset
+    state: present
+  when: teleport_ssh_enabled
+  tags: iptables
+
+- name: Create ipset teleport_proxies
+  command: ipset create teleport_proxies hash:ip
+  failed_when: False
+  changed_when: False
+  when: teleport_ssh_enabled
+  tags: iptables
+
+- name: Check input tcp port 3022 from teleport proxy
+  command: iptables -C INPUT -p tcp --dport 3022 -m set --match-set teleport_proxies  src -j ACCEPT
+  register: iptables_rule_check_result
+  failed_when: False
+  changed_when: False
+  when: teleport_ssh_enabled
+  tags: iptables
+
+- name: Allows input tcp port 3022 from teleport proxy
+  command: iptables -I INPUT 1 -p tcp --dport 3022 -m set --match-set teleport_proxies  src -j ACCEPT
+  register: iptables_rule_insert_result
+  when: teleport_ssh_enabled and iptables_rule_check_result.rc != 0
   tags: iptables
 
 - name: save iptables v4 rules
