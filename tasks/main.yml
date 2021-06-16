@@ -98,7 +98,7 @@
 
 - name: Check input tcp port 3022 from teleport proxy
   command: iptables -C INPUT -p tcp --dport 3022 -m set --match-set teleport_proxies  src -j ACCEPT
-  register: iptables_rule_check_result
+  register: iptables_rule_node_check_result
   failed_when: False
   changed_when: False
   when: teleport_ssh_enabled
@@ -106,8 +106,8 @@
 
 - name: Allows input tcp port 3022 from teleport proxy
   command: iptables -I INPUT 1 -p tcp --dport 3022 -m set --match-set teleport_proxies  src -j ACCEPT
-  register: iptables_rule_insert_result
-  when: teleport_ssh_enabled and iptables_rule_check_result.rc != 0
+  register: iptables_rule_node_insert_result
+  when: teleport_ssh_enabled and iptables_rule_node_check_result.rc != 0
   tags: iptables
 
 - name: Copy script to update teleport_proxies ipset
@@ -127,8 +127,26 @@
 
 - name: save iptables v4 rules
   shell: iptables-save > /etc/iptables/rules.v4
-  when: iptables_rule_check_result.rc != 0 and iptables_rule_insert_result.rc == 0
   tags: iptables
+
+- name: Ensure DNS route53 let's encrypt dependencies installed
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - certbot
+    - python3-certbot-dns-route53
+  when: teleport_letsencrypt_domain != ''
+
+- name: Request let's encrypt certificate
+  shell: "test -f {{ teleport_proxy_https_cert_file|quote }} || certbot certonly --dns-route53 -d {{ teleport_letsencrypt_domain|quote }}"
+  when: teleport_letsencrypt_domain != ''
+
+- name: Cleanup any old teleport directory
+  file:
+    path: /var/lib/teleport
+    state: absent
+  when: teleport_ssh_enabled
 
 - name: Ensure teleport has selected state and enabled on boot.
   service:

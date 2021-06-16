@@ -44,6 +44,7 @@ teleport_proxy_tunnel_listen_address: '{{ teleport_default_address | ipwrap }}:3
 teleport_public_addr: ''
 teleport_ssh_public_addr: ''
 teleport_tunnel_public_addr: ''
+teleport_letsencrypt_domain: ''
 teleport_proxy_https_key_file: ''
 teleport_proxy_https_cert_file: ''
 teleport_acme_email: ''
