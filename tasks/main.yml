@@ -70,7 +70,7 @@
 
 - name: Check input tcp port 3025
   command: iptables -C INPUT -p tcp --dport 3025 -j ACCEPT
-  register: iptables_rule_check_result
+  register: iptables_3025_rule_check_result
   failed_when: False
   changed_when: False
   when: teleport_auth_enabled
@@ -78,8 +78,20 @@
 
 - name: Allows input tcp port 3025
   command: iptables -I INPUT 1 -p tcp --dport 3025 -j ACCEPT
-  register: iptables_rule_insert_result
-  when: teleport_auth_enabled and iptables_rule_check_result.rc != 0
+  when: teleport_auth_enabled and iptables_3025_rule_check_result.rc != 0
+  tags: iptables
+
+- name: Check input tcp port 3023
+  command: iptables -C INPUT -p tcp --dport 3023 -j ACCEPT
+  register: iptables_3023_rule_check_result
+  failed_when: False
+  changed_when: False
+  when: teleport_ssh_public_addr != ''
+  tags: iptables
+
+- name: Allows input tcp port 3023
+  command: iptables -I INPUT 1 -p tcp --dport 3023 -j ACCEPT
+  when: teleport_ssh_public_addr != '' and iptables_3023_rule_check_result.rc != 0
   tags: iptables
 
 - name: Ensure ipset is installed
