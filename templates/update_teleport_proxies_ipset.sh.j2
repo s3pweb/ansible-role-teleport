@@ -5,6 +5,8 @@ DIG=/usr/bin/dig
 
 set -eu
 
+$IPSET list teleport_proxies &>/dev/null || $IPSET create teleport_proxies hash:ip
+
 $IPSET list teleport_proxies_temp &>/dev/null || $IPSET create teleport_proxies_temp hash:ip
 
 $IPSET flush teleport_proxies_temp
