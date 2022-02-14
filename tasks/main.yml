@@ -94,49 +94,6 @@
   when: teleport_ssh_public_addr != '' and iptables_3023_rule_check_result.rc != 0
   tags: iptables
 
-- name: Ensure ipset is installed
-  package:
-    name: ipset
-    state: present
-  when: teleport_ssh_enabled
-  tags: iptables
-
-- name: Create ipset teleport_proxies
-  command: ipset create teleport_proxies hash:ip
-  failed_when: False
-  changed_when: False
-  when: teleport_ssh_enabled
-  tags: iptables
-
-- name: Check input tcp port 3022 from teleport proxy
-  command: iptables -C INPUT -p tcp --dport 3022 -m set --match-set teleport_proxies  src -j ACCEPT
-  register: iptables_rule_node_check_result
-  failed_when: False
-  changed_when: False
-  when: teleport_ssh_enabled
-  tags: iptables
-
-- name: Allows input tcp port 3022 from teleport proxy
-  command: iptables -I INPUT 1 -p tcp --dport 3022 -m set --match-set teleport_proxies  src -j ACCEPT
-  register: iptables_rule_node_insert_result
-  when: teleport_ssh_enabled and iptables_rule_node_check_result.rc != 0
-  tags: iptables
-
-- name: Copy script to update teleport_proxies ipset
-  template:
-    src: "update_teleport_proxies_ipset.sh.j2"
-    dest: "/usr/sbin/update_teleport_proxies_ipset"
-    owner: "root"
-    group: "root"
-    mode: 0100
-  when: teleport_ssh_enabled
-
-- name: Ensure script to update teleport_proxies ipset is run very often
-  cron:
-    name: teleport_proxies ipset update
-    job: "/usr/sbin/update_teleport_proxies_ipset > /dev/null"
-  when: teleport_ssh_enabled
-
 - name: save iptables v4 rules
   shell: iptables-save > /etc/iptables/rules.v4
   tags: iptables
