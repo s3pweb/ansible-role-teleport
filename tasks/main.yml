@@ -21,7 +21,13 @@
     ./install
     chdir=/tmp/teleport
   become: yes
-  when: "teleport_version_check.rc >= 1 or (teleport_version not in teleport_version_check.stdout)"
+  when: "ansible_lsb.major_release|int != 16 and (teleport_version_check.rc >= 1 or (teleport_version not in teleport_version_check.stdout))"
+
+- name: Install teleport (for Ubuntu 16).
+  unarchive:
+    src: teleport_v9.0.1_ubuntu16.tar.xz 
+    dest: /usr/local/bin
+  when: ansible_lsb.major_release|int == 16
 
 - name: Create teleport config.
   template:
