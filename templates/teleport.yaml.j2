@@ -50,7 +50,6 @@ auth_service:
       facets:
         - "{{ teleport_u2f_app_id }}"
 {% endif %}
-  oidc_connectors: []
   cluster_name: {{ teleport_auth_cluster_name }}
 {% if teleport_auth_public_addr %}
   public_addr: "{{ teleport_auth_public_addr }}"
