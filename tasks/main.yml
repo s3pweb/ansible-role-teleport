@@ -121,7 +121,7 @@
   file:
     path: /var/lib/teleport
     state: absent
-  when: teleport_ssh_enabled
+  when: teleport_ssh_enabled and not teleport_force_host_uuid is defined
 
 - name: Ensure teleport has selected state and enabled on boot.
   service:
