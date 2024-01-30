@@ -38,6 +38,15 @@
     mode: 0600
   notify: restart teleport
 
+- name: Create teleport APPs config.
+  template:
+    src: "teleport_apps.yaml.j2"
+    dest: "{{ teleport_apps_config_path }}"
+    owner: "root"
+    group: "root"
+    mode: 0600
+  notify: restart teleport_apps
+
 - include_tasks: configure-Systemd.yml
   when: ansible_service_mgr == 'systemd'
 
@@ -126,7 +135,13 @@
 - name: Ensure teleport has selected state and enabled on boot.
   service:
     name: 'teleport'
-    #state: 'reloaded'
+    state: 'restarted'
+    enabled: yes
+  changed_when: false
+
+- name: Ensure teleport APPs has selected state and enabled on boot.
+  service:
+    name: 'teleport_apps'
     state: 'restarted'
     enabled: yes
   changed_when: false

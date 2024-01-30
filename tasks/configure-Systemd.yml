@@ -8,3 +8,13 @@
     mode: 0644
   register: service_installed
   notify: restart teleport
+
+- name: Create teleport APPs service (systemd).
+  template:
+    src: "teleport_apps.service.j2"
+    dest: "/etc/systemd/system/teleport_apps.service"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  register: service_apps_installed
+  notify: restart teleport_apps

@@ -48,3 +48,8 @@ teleport_letsencrypt_domain: ''
 teleport_proxy_https_key_file: ''
 teleport_proxy_https_cert_file: ''
 teleport_acme_email: ''
+
+# teleport APPs service
+teleport_apps_data_dir: '/etc'
+teleport_apps_config_path: "/etc/teleport_apps.yaml"
+teleport_apps_pidfile: '/var/run/teleport_apps.pid'

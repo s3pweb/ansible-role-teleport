@@ -1,0 +1,15 @@
+[Unit]
+Description=Teleport APP Service
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart=/usr/local/bin/teleport start --config={{ teleport_apps_config_path }} {{ teleport_apps_opts | default('') }}
+ExecReload=/bin/kill -HUP $MAINPID
+PIDFile={{ teleport_apps_pidfile }}
+KillMode=process
+User=root
+
+[Install]
+WantedBy=multi-user.target

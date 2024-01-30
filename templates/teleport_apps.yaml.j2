@@ -1,0 +1,26 @@
+version: v3
+teleport:
+  nodename: {{ teleport_nodename }}
+  data_dir: /etc
+  pid_file: {{ teleport_apps_pidfile }}
+{% if teleport_ca_pin %}
+  ca_pin: "{{ teleport_ca_pin }}"
+{% endif %}
+{% if teleport_auth_token %}  
+  auth_token: "{{ teleport_auth_token }}"
+{% endif %}
+{% if teleport_advertise_ip | default(false) %}
+  proxy_server: "{{ teleport_advertise_ip }}:443"
+{% endif %}
+  log:
+    output: syslog
+    severity: {{ teleport_log_level }}
+auth_service:
+  enabled: "no"
+ssh_service:
+  enabled: "no"
+proxy_service:
+  enabled: "no"
+{% if teleport_configuration_applications is defined %}
+{{ teleport_configuration_applications | to_nice_yaml(indent=2) }}
+{% endif %}
