@@ -18,3 +18,4 @@
     mode: 0644
   register: service_apps_installed
   notify: restart teleport_apps
+  when: teleport_configuration_applications is defined

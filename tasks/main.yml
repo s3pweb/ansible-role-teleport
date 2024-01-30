@@ -46,6 +46,7 @@
     group: "root"
     mode: 0600
   notify: restart teleport_apps
+  when: teleport_configuration_applications is defined
 
 - include_tasks: configure-Systemd.yml
   when: ansible_service_mgr == 'systemd'
@@ -145,3 +146,4 @@
     state: 'restarted'
     enabled: yes
   changed_when: false
+  when: teleport_configuration_applications is defined
