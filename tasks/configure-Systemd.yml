@@ -9,6 +9,17 @@
   register: service_installed
   notify: restart teleport
 
+- name: Create teleport PROD service (systemd).
+  template:
+    src: "teleport_prod.service.j2"
+    dest: "/etc/systemd/system/teleport_prod.service"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  register: service_prod_installed
+  notify: restart teleport_prod
+  when: teleport_prod_enabled
+
 - name: Create teleport APPs service (systemd).
   template:
     src: "teleport_apps.service.j2"

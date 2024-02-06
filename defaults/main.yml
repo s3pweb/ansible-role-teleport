@@ -1,6 +1,7 @@
 ---
 teleport_version: "6.2.3"
 teleport_url: "https://get.gravitational.com/teleport-v{{ teleport_version }}-linux-amd64-bin.tar.gz"
+
 teleport_ssl_cert_path: "/etc/teleport"
 teleport_config_path: "/etc/teleport.yaml"
 teleport_nodename: 'teleport'
@@ -47,9 +48,61 @@ teleport_tunnel_public_addr: ''
 teleport_letsencrypt_domain: ''
 teleport_proxy_https_key_file: ''
 teleport_proxy_https_cert_file: ''
+teleport_proxy_https_key_file2: ''
+teleport_proxy_https_cert_file2: ''
 teleport_acme_email: ''
 
 # teleport APPs service
 teleport_apps_data_dir: '/etc'
 teleport_apps_config_path: "/etc/teleport_apps.yaml"
 teleport_apps_pidfile: '/run/teleport_apps.pid'
+
+teleport_prod_enabled: no
+
+# teleport PROD service
+teleport_prod_ssl_cert_path: "/etc/teleport"
+teleport_prod_config_path: "/etc/teleport_prod.yaml"
+teleport_prod_nodename: 'teleport'
+teleport_prod_auth_token: ''
+teleport_prod_auth_servers:
+  - 127.0.0.1:3025
+teleport_prod_data_dir: '/var/lib/teleport-prod'
+teleport_prod_log_level: 'WARN'
+teleport_prod_storage_type: 'dir'
+teleport_prod_pidfile: '/run/teleport_prod.pid'
+
+teleport_prod_default_address: '0.0.0.0'
+
+teleport_prod_audit_events_uri: ''
+teleport_prod_audit_sessions_uri: ''
+
+# auth service
+teleport_prod_auth_enabled: true
+teleport_prod_auth_listen_address: '{{ teleport_prod_default_address | ipwrap }}:3025'
+teleport_prod_auth_cluster_name: 'main'
+teleport_prod_auth_tokens_node: []
+teleport_prod_auth_tokens_proxy: []
+teleport_prod_auth_tokens_auth: []
+teleport_prod_auth_trusted_clusters: []
+teleport_prod_auth_oidc_connectors: []
+teleport_prod_auth_public_addr: ''
+
+# ssh service
+teleport_prod_ssh_enabled: true
+teleport_prod_ssh_listen_address: '{{ teleport_prod_default_address | ipwrap }}:13022'
+teleport_prod_commands: []
+teleport_prod_ssh_labels: ''
+
+# proxy service
+teleport_prod_proxy_enabled: true
+teleport_prod_ca_pin: ''
+teleport_prod_proxy_listen_address: '{{ teleport_prod_default_address | ipwrap }}:3023'
+teleport_prod_proxy_web_listen_address: '{{ teleport_prod_default_address | ipwrap }}:3080'
+teleport_prod_proxy_tunnel_listen_address: '{{ teleport_prod_default_address | ipwrap }}:3024'
+teleport_prod_public_addr: ''
+teleport_prod_ssh_public_addr: ''
+teleport_prod_tunnel_public_addr: ''
+teleport_prod_letsencrypt_domain: ''
+teleport_prod_proxy_https_key_file: ''
+teleport_prod_proxy_https_cert_file: ''
+teleport_prod_acme_email: ''

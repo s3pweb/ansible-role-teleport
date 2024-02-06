@@ -1,0 +1,15 @@
+[Unit]
+Description=Teleport PROD SSH Service
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart=/usr/local/bin/teleport_prod start --config={{ teleport_prod_config_path }} {{ teleport_prod_opts | default('') }}
+ExecReload=/bin/kill -HUP $MAINPID
+PIDFile={{ teleport_prod_pidfile }}
+KillMode=process
+User=root
+
+[Install]
+WantedBy=multi-user.target

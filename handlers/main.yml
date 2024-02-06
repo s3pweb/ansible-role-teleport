@@ -29,3 +29,18 @@
     state: restarted
   listen: restart teleport_apps
   when: ansible_service_mgr != 'systemd'
+
+- name: systemd | restart teleport_prod
+  systemd:
+    name: teleport_prod
+    state: restarted
+    daemon_reload: true
+  listen: restart teleport_prod
+  when: ansible_service_mgr == 'systemd'
+
+- name: sysinit & upstart | restart teleport_prod
+  service:
+    name: teleport_prod
+    state: restarted
+  listen: restart teleport_prod
+  when: ansible_service_mgr != 'systemd'

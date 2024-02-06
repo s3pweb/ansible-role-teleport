@@ -29,6 +29,30 @@
     dest: /usr/local/bin
   when: ansible_lsb.major_release|int == 16
 
+- name: Check if teleport PROD is installed.
+  command: "/usr/local/bin/teleport_prod version"
+  changed_when: false
+  register: teleport_prod_version_check
+  failed_when: false
+  when: teleport_prod_enabled
+
+- name: Unarchive teleport PROD.
+  unarchive:
+    src: "https://get.gravitational.com/teleport-v{{ teleport_prod_version }}-linux-amd64-bin.tar.gz"
+    dest: /tmp
+    remote_src: yes
+  when: "teleport_prod_enabled and ( teleport_prod_version_check.rc >= 1 or (teleport_prod_version not in teleport_prod_version_check.stdout) )"
+
+- name: Install teleport PROD.
+  ansible.builtin.copy:
+    src: /tmp/teleport/teleport
+    remote_src: yes
+    dest: /usr/local/bin/teleport_prod
+    owner: root
+    mode: '0755'
+  become: yes
+  when: "teleport_prod_enabled and ansible_lsb.major_release|int != 16 and (teleport_prod_version_check.rc >= 1 or (teleport_prod_version not in teleport_prod_version_check.stdout))"
+
 - name: Create teleport config.
   template:
     src: "teleport.yaml.j2"
@@ -47,6 +71,16 @@
     mode: 0600
   notify: restart teleport_apps
   when: teleport_configuration_applications is defined
+
+- name: Create teleport PROD config.
+  template:
+    src: "teleport_prod.yaml.j2"
+    dest: "{{ teleport_prod_config_path }}"
+    owner: "root"
+    group: "root"
+    mode: 0600
+  notify: restart teleport_prod
+  when: teleport_prod_enabled
 
 - include_tasks: configure-Systemd.yml
   when: ansible_service_mgr == 'systemd'
@@ -127,11 +161,11 @@
   shell: "test -f {{ teleport_proxy_https_cert_file|quote }} || certbot certonly --dns-route53 -d {{ teleport_letsencrypt_domain|quote }}"
   when: teleport_letsencrypt_domain != ''
 
-- name: Cleanup any old teleport directory
-  file:
-    path: /var/lib/teleport
-    state: absent
-  when: teleport_ssh_enabled and not teleport_force_host_uuid is defined
+    #- name: Cleanup any old teleport directory
+    #  file:
+    #    path: /var/lib/teleport
+    #    state: absent
+    #  when: teleport_ssh_enabled and not teleport_force_host_uuid is defined
 
 - name: Ensure teleport has selected state and enabled on boot.
   service:
@@ -147,3 +181,34 @@
     enabled: yes
   changed_when: false
   when: teleport_configuration_applications is defined
+
+- name: Create ipset prod_teleport_proxies
+  command: /sbin/ipset create prod_teleport_proxies hash:ip
+  failed_when: False
+  changed_when: False
+  when: teleport_prod_enabled and teleport_prod_ssh_enabled
+
+- name: Create ipset prod_teleport_proxies
+  command: /sbin/ipset add prod_teleport_proxies {{ teleport_prod_ip }}
+  failed_when: False
+  changed_when: False
+  when: teleport_prod_enabled and teleport_prod_ssh_enabled
+
+- name: Check input tcp port 13022
+  command: iptables -C INPUT -p tcp -m tcp --dport 13022 -m set --match-set prod_teleport_proxies src -m comment --comment "ANSIBLE - accept ipset teleport_proxies port 13022" -j ACCEPT
+  register: iptables_13022_rule_check_result
+  failed_when: False
+  changed_when: False
+  when: teleport_prod_enabled and teleport_prod_ssh_enabled
+
+- name: Allows input tcp port 13022
+  command: iptables -I INPUT 1 -p tcp -m tcp --dport 13022 -m set --match-set prod_teleport_proxies src -m comment --comment "ANSIBLE - accept ipset prod_teleport_proxies port 13022" -j ACCEPT
+  when: teleport_prod_enabled and teleport_prod_ssh_enabled and iptables_13022_rule_check_result.rc != 0
+
+- name: Ensure teleport PROD has selected state and enabled on boot.
+  service:
+    name: 'teleport_prod'
+    state: 'restarted'
+    enabled: yes
+  changed_when: false
+  when: teleport_prod_enabled

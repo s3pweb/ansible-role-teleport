@@ -105,6 +105,10 @@ proxy_service:
   https_keypairs:
     - key_file: {{ teleport_proxy_https_key_file }}
       cert_file: {{ teleport_proxy_https_cert_file }}
+{% if teleport_proxy_https_key_file2 and teleport_proxy_https_cert_file2 %}
+    - key_file: {{ teleport_proxy_https_key_file2 }}
+      cert_file: {{ teleport_proxy_https_cert_file2 }}
+{% endif %}
 {% else %}
   https_keypairs: []
 {% endif %}
