@@ -10,6 +10,14 @@
   notify: restart teleport
   when: teleport_enabled
 
+- name: Disable teleport service (systemd).
+  systemd:
+    name: teleport
+    enabled: teleport_enabled
+    state: stopped
+    daemon_reload: true
+  when: not teleport_enabled
+
 - name: Create teleport PROD service (systemd).
   template:
     src: "teleport_prod.service.j2"
