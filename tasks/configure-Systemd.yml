@@ -8,6 +8,7 @@
     mode: 0644
   register: service_installed
   notify: restart teleport
+  when: teleport_enabled
 
 - name: Create teleport PROD service (systemd).
   template:
